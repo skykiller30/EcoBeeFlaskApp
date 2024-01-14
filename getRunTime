@@ -1,0 +1,1 @@
+curl -H "Content-Type: text/json" -H "Authorization: Bearer ACCESS_TOKEN" 'https://api.ecobee.com/1/thermostat?format=json&body=\{"selection":\{"selectionType":"registered","selectionMatch":"","includeRuntime":true\}\}' 
