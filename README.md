@@ -6,4 +6,6 @@ Temperature Data will be collected from
 - EcoBee
 - PhilipsHue
 
-Each data source has its own method of collecting temperature data see the wiki on how to set up developer accounts for each vendor 
+Each data source has its own method of collecting temperature see below on how to get started with each vendor
+
+## EcoBee
