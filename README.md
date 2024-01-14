@@ -1,5 +1,5 @@
 # Collecting Temperature Readings from Multiple Devices
-THe purpose of the project is to collect temperature data from multiple applications across my house and place them all on 1 local dashboard
+The purpose of the project is to collect temperature data from multiple applications across my house and place them all on 1 local dashboard
 
 Temperature Data will be collected from
 - Google
