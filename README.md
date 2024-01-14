@@ -1,5 +1,9 @@
-# customEcoBee
-EcoBee Dashboard
+# Collecting Temperature Readings from Multiple Devices
+THe purpose of the project is to collect temperature data from multiple applications across my house and place them all on 1 local dashboard
 
-#EcoBee Dashboard
-I am trying to build a local web dashboard that I can access to see the historical run time of my AC Unit/Furance and be able to identify trends in my usage.
+Temperature Data will be collected from
+- Google
+- EcoBee
+- PhilipsHue
+
+Each data source has its own method of collecting temperature data see the wiki on how to set up developer accounts for each vendor 
