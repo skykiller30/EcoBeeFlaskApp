@@ -1,0 +1,1 @@
+curl -X POST 'https://api.ecobee.com/1/token?grant_type=ecobeePin&code=AUTHORIZATION_CODE&client_id=API_KEY'
