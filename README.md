@@ -1,6 +1,8 @@
 # Collecting Temperature Readings from Multiple Devices
 The purpose of the project is for beginners to to collect temperature data from multiple applications and place them all on 1 local dashboard.
 
+# right now this is a work in progress with placeholder documents and code until I can get it all integrated into one python/Flask app
+
 Temperature Data will be collected from:
 - Google
 - EcoBee
