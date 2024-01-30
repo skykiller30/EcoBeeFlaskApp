@@ -1,0 +1,431 @@
+{
+	"info": {
+		"_postman_id": "null",
+		"name": "EcoBee",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "null"
+	},
+	"item": [
+		{
+			"name": "GetPINandAuthCode",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"ecobeePin\", jsonData.ecobeePin);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"AutorizationCode\", jsonData.code);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"Interval\", jsonData.interval);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"ExpiresIn\", jsonData.expires_in);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"Scope\", jsonData.scope);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.ecobee.com/authorize?response_type=ecobeePin&client_id={{apiKey}}&scope=smartWrite\n",
+					"protocol": "https",
+					"host": [
+						"api",
+						"ecobee",
+						"com"
+					],
+					"path": [
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "ecobeePin"
+						},
+						{
+							"key": "client_id",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "scope",
+							"value": "smartWrite\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ObtainAccessAndRefreshToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"accessToken\", jsonData.access_token);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData.refresh_token);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://api.ecobee.com/token\n?grant_type=ecobeePin&code={{AutorizationCode}}&client_id={{apiKey}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"ecobee",
+						"com"
+					],
+					"path": [
+						"token\n"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "ecobeePin"
+						},
+						{
+							"key": "code",
+							"value": "{{AutorizationCode}}"
+						},
+						{
+							"key": "client_id",
+							"value": "{{apiKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RefreshToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"accessToken\", jsonData.access_token);\r",
+							"\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData.refresh_token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"console.log(response);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.ecobee.com/token\n?grant_type=refresh_token&code={{refreshToken}}&client_id={{apiKey}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"ecobee",
+						"com"
+					],
+					"path": [
+						"token\n"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "refresh_token"
+						},
+						{
+							"key": "code",
+							"value": "{{refreshToken}}"
+						},
+						{
+							"key": "client_id",
+							"value": "{{apiKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetThermostatsAndRuntime",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/1/thermostat?format=json&body={\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"\",\"includeRuntime\":true}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"thermostat"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "body",
+							"value": "{\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"\",\"includeRuntime\":true}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetThermostatAndSensorID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"const thermostatList = response.thermostatList || [];\r",
+							"\r",
+							"const upstairsThermostat = thermostatList.find(thermostat => thermostat.name === \"Upstairs\");\r",
+							"\r",
+							"const upstairsID = upstairsThermostat ? upstairsThermostat.identifier : null;\r",
+							"\r",
+							"pm.collectionVariables.set(\"upstairsID\", upstairsID);\r",
+							"\r",
+							"const mainFloorThermostat = thermostatList.find(thermostat => thermostat.name === \"Main Floor\");\r",
+							"\r",
+							"const mainFloorID = mainFloorThermostat ? mainFloorThermostat.identifier : null;\r",
+							"\r",
+							"pm.collectionVariables.set(\"mainFloorID\", mainFloorID);\r",
+							"\r",
+							"//add getsensorID code here and asign sensorID to variable"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/1/thermostat?format=json&body={\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"\",\"includeProgram\":true}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"thermostat"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "body",
+							"value": "{\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"\",\"includeProgram\":true}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NewSensorParticipation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+				"raw": [INSERT PROGRAM HERE]
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/1/thermostat?format=json&body={\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"identifier={{upstairsID}}\",\"includeProgram\":true}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"thermostat"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "body",
+							"value": "{\"selection\":{\"selectionType\":\"registered\",\"selectionMatch\":\"identifier={{upstairsID}}\",\"includeProgram\":true}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiKey",
+			"value": ""
+		},
+		{
+			"key": "ecobeePin",
+			"value": ""
+		},
+		{
+			"key": "AutorizationCode",
+			"value": ""
+		},
+		{
+			"key": "Interval",
+			"value": ""
+		},
+		{
+			"key": "ExpiresIn",
+			"value": ""
+		},
+		{
+			"key": "Scope",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://api.ecobee.com"
+		},
+		{
+			"key": "upstairsID",
+			"value": ""
+		},
+		{
+			"key": "mainFloorID",
+			"value": ""
+		}
+	]
+}
