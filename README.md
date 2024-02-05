@@ -1,14 +1,12 @@
-# Collecting Temperature Readings from Multiple Devices
-The purpose of the project is for beginners to to collect temperature data from multiple applications and place them all on 1 local dashboard.
+# Change EcoBee Comfort Settings
+The purpose of the project is to build a Python/Flask App that runs on Docker. The app will adjust the temperature ranges of each Comfort Setting (Home, Away, Sleep, etc) based on the outdoor temperature. Cooler outdoor temperatures will create warmer indoor Comfort presents and hotter outside temperatures will create cooler indoor Comfort Settings. 
 
 # right now this is a work in progress with placeholder documents and code until I can get it all integrated into one python/Flask app
 
-Temperature Data will be collected from:
-- Google
-- EcoBee
-- Philips Hue
+- App will Authenicate with EcoBree and bring in bearer token.
+- Query EcoBee API for thermostat and Forcast data
+- If outside temperatures are too cold/too hot then the app will modify the existing comfort settings with new temperature presets
 
-Each data source has its own method of collecting temperature see below on how to get started with each vendor
 
 ## EcoBee
 (this requires an EcoBee Smart thermostat and an EcoBee account)
