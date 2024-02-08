@@ -11,21 +11,20 @@ access_token = secrets_data["ACCESS_TOKEN"]
 refresh_token = secrets_data["REFRESH_TOKEN"]
 
 
-def get_thermostat_data(access_token):
+def get_weather_data(access_token):
     url = "https://api.ecobee.com/1/thermostat"
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
     params = {
         "format": "json",
-        "body": '{"selection":{"selectionType":"registered","selectionMatch":""}}'
+        "body": '{"selection":{"selectionType":"registered","selectionMatch":"","includeWeather:True}}'
     }
     response = requests.get(url, headers=headers, params=params)
 
     ecoBeeResponse = response.json()
     
     if response.status_code == 200:
-       
         return ecoBeeResponse
     elif response.status_code == 500 and "message" in ecoBeeResponse["status"] and "Authentication token has expired. Refresh your tokens." in ecoBeeResponse["status"]["message"]:
         def getRefreshToken(refresh_token, api_key):
@@ -44,8 +43,8 @@ def get_thermostat_data(access_token):
                 return None
             
         token_response = getRefreshToken(refresh_token, api_key)
-        new_access_token = token_response["access_token"]
-        secrets_data["ACCESS_TOKEN"]=new_access_token
+        secrets_data["ACCESS_TOKEN"] = token_response["access_token"]
+        
         with open(secrets_file, 'w') as file:
             json.dump(secrets_data, file, indent=4)
         return print("The access token has expired, but the secrets.json file has been updated with a new token. Please run again")
@@ -53,9 +52,5 @@ def get_thermostat_data(access_token):
     else:
         print("Error:", response.status_code)
         return None
-
-thermostat_data = get_thermostat_data(access_token)
-secrets_data.update(thermostat_data)
-with open(secrets_file, 'w') as file:
-            json.dump(secrets_data, file, indent=4)
-print(json.dumps(secrets_data, indent=4))
+    
+print(get_weather_data(access_token))

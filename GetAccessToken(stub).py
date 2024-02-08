@@ -25,11 +25,12 @@ def get_access_token(authorization_code, api_key):
     else:
         print("Error:", response.status_code)
         return None
+    
 token_response = get_access_token(authorization_code, api_key)
-access_token = token_response["access_token"]
-refresh_token = token_response["refresh_token"]
-secrets_data["ACCESS_TOKEN"] = access_token
-secrets_data["REFRESH_TOKEN"] = refresh_token
+secrets_data.update({
+    "ACCESS_TOKEN": token_response["access_token"],
+    "REFRESH_TOKEN": token_response["refresh_token"]
+})
 
 with open(secrets_file, 'w') as file:
     json.dump(secrets_data, file, indent=4)
