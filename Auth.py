@@ -1,11 +1,17 @@
 import requests
 import json
+secrets_file = "secrets.json"
 
-def refresh_token(refresh_token, client_id, api_key):
+with open(secrets_file) as f:
+    secrets_data = json.load(f)
+
+
+
+def get_access_token(authorization_code, client_id, api_key):
     url = "https://api.ecobee.com/token"
     payload = {
-        "grant_type": "refresh_token",
-        "code": refresh_token,
+        "grant_type": "ecobeePin",
+        "code": authorization_code,
         "client_id": client_id,
         "client_secret": api_key
     }
@@ -18,4 +24,6 @@ def refresh_token(refresh_token, client_id, api_key):
         return None
 
 
-response = 
+
+
+
