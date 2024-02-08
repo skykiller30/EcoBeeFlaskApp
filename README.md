@@ -6,7 +6,7 @@ The purpose of the project is to build a Python/Flask App that runs on Docker. T
 - App will Authenicate with EcoBree and bring in bearer token.
 - Query EcoBee API for thermostat and Forcast data
 - If outside temperatures are too cold/too hot then the app will modify the existing comfort settings with new temperature presets
-### **change "samplesecrets.json" filename to "secrets.json"**
+- **CHANGE "SAMPLESECRETS.JSON TO "SECRETS.JSON"**
 - I will eventualy write a python setup script that will help with the initial EcoBee registration app but for right now just use Example #1 on [EcoBee's Developer Site](https://www.ecobee.com/home/developer/api/examples/ex1.shtml)
 
 
