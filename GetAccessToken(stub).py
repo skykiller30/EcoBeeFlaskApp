@@ -25,15 +25,11 @@ def get_access_token(authorization_code, api_key):
     else:
         print("Error:", response.status_code)
         return None
-
-access_token = response["access_token"]
-refresh_token = response["refresh_token"]
+token_response = get_access_token(authorization_code, api_key)
+access_token = token_response["access_token"]
+refresh_token = token_response["refresh_token"]
 secrets_data["ACCESS_TOKEN"] = access_token
-secrets_date["REFRESH_TOKEN"] = refresh_token
-secrets_data[
-        with open(secrets_file, 'w') as file:
-            json.dump(secrets_data, file, indent=4)
+secrets_data["REFRESH_TOKEN"] = refresh_token
 
-
-
-
+with open(secrets_file, 'w') as file:
+    json.dump(secrets_data, file, indent=4)
