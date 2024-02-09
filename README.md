@@ -1,7 +1,7 @@
 # Change EcoBee Comfort Settings
 The purpose of the project is to build a Python/Flask App that runs on Docker. The app will adjust the temperature ranges of each Comfort Setting (Home, Away, Sleep, etc) based on the outdoor temperature. Cooler outdoor temperatures will create warmer indoor Comfort presents and hotter outside temperatures will create cooler indoor Comfort Settings. 
 
-# Before this app can fly as a Docker/Flask app it must craw as some basic python scrips
+# Before this app can fly as a Docker/Flask app it must craw as some basic python scripts
 
 - App will Authenicate with EcoBree and bring in bearer token.
 - Query EcoBee API for thermostat and Forcast data
