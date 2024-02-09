@@ -30,3 +30,4 @@ new_access_token = token_response["access_token"]
 secrets_data["ACCESS_TOKEN"]=new_access_token
 with open(secrets_file, 'w') as file:
     json.dump(secrets_data, file, indent=4)
+print("Access Token was successfully refreshed")

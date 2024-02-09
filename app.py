@@ -30,7 +30,7 @@ if ecoBeeResponse.status_code == 200:
     secrets_data.update(ecoBeeResponse)
     with open(secrets_file, 'w') as file:
            json.dump(secrets_data, file, indent=4)
-    print("Sucessfull! Result:", json.dumps(secrets_data, indent=4))
+    print("Successfull! Result:", json.dumps(secrets_data, indent=4))
 
 elif ecoBeeResponse.status_code == 500 and "message" in ecoBeeResponse.json()["status"] and "Authentication token has expired. Refresh your tokens." in ecoBeeResponse.json()["status"]["message"]:
     def getRefreshToken(refresh_token, api_key):
