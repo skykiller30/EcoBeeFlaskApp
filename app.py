@@ -1,5 +1,7 @@
 import requests
 import json
+import os
+import sys
 
 secrets_file = "secrets.json"
 
@@ -26,11 +28,12 @@ def get_thermostat_data(access_token):
 ecoBeeResponse = get_thermostat_data(access_token)
 
 if ecoBeeResponse.status_code == 200:
-    ecoBeeResponse=ecoBeeResponse.json()
+    ecoBeeResponse = ecoBeeResponse.json()
     secrets_data.update(ecoBeeResponse)
+    thermostat_list = ecoBeeResponse.get("thermostatList", [])
     with open(secrets_file, 'w') as file:
            json.dump(secrets_data, file, indent=4)
-    print("Successfull! Result:", json.dumps(secrets_data, indent=4))
+    print("Successfull Result:", json.dumps(thermostat_list, indent=4))
 
 elif ecoBeeResponse.status_code == 500 and "message" in ecoBeeResponse.json()["status"] and "Authentication token has expired. Refresh your tokens." in ecoBeeResponse.json()["status"]["message"]:
     def getRefreshToken(refresh_token, api_key):
@@ -48,6 +51,7 @@ elif ecoBeeResponse.status_code == 500 and "message" in ecoBeeResponse.json()["s
         else:
             print("Error:", response)
             return None
+        
     ecoBeeResponse=ecoBeeResponse.json()
     token_response = getRefreshToken(refresh_token, api_key)
     new_access_token = token_response["access_token"]
@@ -55,7 +59,11 @@ elif ecoBeeResponse.status_code == 500 and "message" in ecoBeeResponse.json()["s
     with open(secrets_file, 'w') as file:
         json.dump(secrets_data, file, indent=4)
         secrets_data.update(ecoBeeResponse)
-    print("The access token has expired, but the secrets.json file has been updated with a new token. Please run again")
+
+    print("The access token has expired, but has now been updated. App will restart")
+    python_executable = sys.executable
+    script_path = sys.argv[0]
+    os.execv(python_executable, ['python', script_path])
         
 else:
     print("Error:", ecoBeeResponse.status_code)

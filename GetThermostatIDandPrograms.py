@@ -26,7 +26,7 @@ def get_thermostat_data(access_token):
 
 thermostat_list = get_thermostat_data(access_token)
 thermostat_list =thermostat_list.get("thermostatList", [])
-print("Successfull! Result:", json.dumps(thermostat_list, indent=4))
+#print("Successfull! Result:", json.dumps(thermostat_list, indent=4))
 
 # Find the thermostat with name "Upstairs" and extract its identifier and program
 upstairs_thermostat = next((thermostat for thermostat in thermostat_list if thermostat.get("name") == "Upstairs"), None)
@@ -49,3 +49,5 @@ main_floor_schedule = json.dumps(main_floor_program.get("schedule", {}))
 
 # Extract climates of the main floor thermostat
 main_floor_climates = main_floor_program.get("climates", [])
+
+print(upstairs_id, upstairs_climates)
