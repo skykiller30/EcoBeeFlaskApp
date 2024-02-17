@@ -1,2 +1,3 @@
-#ignore all json files
-*.json
+#ignore personal json files
+secrets.json
+warmerComfortProgramUpstairs.json
