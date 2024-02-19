@@ -10,22 +10,12 @@ with open(secrets_file) as f:
 api_key = secrets_data["API_KEY"]
 access_token = secrets_data["ACCESS_TOKEN"]
 refresh_token = secrets_data["REFRESH_TOKEN"]
+main_floor_id = None
+upstairs_id = None
+main_floor_file = "mainFloorBody.json"
+upstairs_file = "upStairsBody.json"
+ecoBeeDictionary = None
 
-def get_weather_data(access_token):
-    url = "https://api.ecobee.com/1/thermostat"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    params = {
-        "format": "json",
-        "body": '{"selection":{"selectionType":"registered","selectionMatch":"","includeWeather":true}}'
-    }
-    response = requests.get(url, headers=headers, params=params)
-
-    return response.json()
-   
-    
-print(json.dumps(get_weather_data(access_token), indent=4))
 
 def get_thermostat_data(access_token):
     url = "https://api.ecobee.com/1/thermostat"
@@ -37,32 +27,74 @@ def get_thermostat_data(access_token):
         "body": '{"selection":{"selectionType":"registered","selectionMatch":"","includeProgram":true}}'
     }
     response = requests.get(url, headers=headers, params=params)
-    return response.json()
+    return response
 
-thermostat_list = get_thermostat_data(access_token)
-thermostat_list =thermostat_list.get("thermostatList", [])
-#print("Successfull! Result:", json.dumps(thermostat_list, indent=4))
+ecoBeeResponse = get_thermostat_data(access_token)
 
-# Find the thermostat with name "Upstairs" and extract its identifier and program
-upstairs_thermostat = next((thermostat for thermostat in thermostat_list if thermostat.get("name") == "Upstairs"), None)
-upstairs_id = upstairs_thermostat.get("identifier") if upstairs_thermostat else None
-upstairs_program = upstairs_thermostat.get("program", {}) if upstairs_thermostat else {}
+if ecoBeeResponse.status_code == 200:
+    ecoBeeDictionary = ecoBeeResponse.json()
 
-# Convert the schedule of the upstairs thermostat to JSON string
-upstairs_schedule = json.dumps(upstairs_program.get("schedule", {}))
+    def extract_identifiers(ecoBeeDictionary):
+        for thermostat in ecoBeeDictionary["thermostatList"]:
+            name = thermostat["name"]
+            if name == "Main Floor":
+                main_floor_id = thermostat["identifier"]
+            elif name == "Upstairs":
+                upstairs_id = thermostat["identifier"]
+            else:
+                print("There is no thermostats matching the names you've entered")
+        return main_floor_id, upstairs_id
+    main_floor_id, upstairs_id = extract_identifiers(ecoBeeDictionary)
 
-# Extract climates of the upstairs thermostat
-upstairs_climates = upstairs_program.get("climates", [])
 
-# Find the thermostat with name "Main Floor" and extract its identifier and program
-main_floor_thermostat = next((thermostat for thermostat in thermostat_list if thermostat.get("name") == "Main Floor"), None)
-main_floor_id = main_floor_thermostat.get("identifier") if main_floor_thermostat else None
-main_floor_program = main_floor_thermostat.get("program", {}) if main_floor_thermostat else {}
+    def build_post_body (main_floor_id, upstairs_id):
+        main_floor_post_body = {}
+        upstairs_post_body = {}
+        for thermostat in ecoBeeDictionary["thermostatList"]:
+            if thermostat["identifier"] == main_floor_id:
+                main_floor_post_body["selection"] = {
+                    "selectionType": "thermostats",
+                    "selectionMatch": main_floor_id
+                }
+                main_floor_post_body["thermostat"] = {
+                    "program": thermostat["program"]
+                }
+            elif thermostat["identifier"] == upstairs_id:
+                upstairs_post_body["selection"] = {
+                    "selectionType": "thermostats",
+                    "selectionMatch": upstairs_id
+                }
+                upstairs_post_body["thermostat"] = {
+                    "program": thermostat["program"]
+                }
+            else:
+                print("Could not built post body content from JSON repsonse")
+        return main_floor_post_body,upstairs_post_body
+            
+    main_floor_program_post,upstairs_program_post = build_post_body(main_floor_id,upstairs_id)
+    #upstairs_post_post = build_post_body(upstairs_id)
+    with open(main_floor_file, "w") as json_file:
+        json.dump(main_floor_program_post, json_file)
 
-# Convert the schedule of the main floor thermostat to JSON string
-main_floor_schedule = json.dumps(main_floor_program.get("schedule", {}))
+    with open(upstairs_file, "w") as json_file:
+        json.dump(upstairs_program_post, json_file)
 
-# Extract climates of the main floor thermostat
-main_floor_climates = main_floor_program.get("climates", [])
+    # Print identifiers
+    print("Main Floor Identifier:", json.dumps(main_floor_program_post, indent=4))
+    print("Upstairs Identifier:", json.dumps(upstairs_program_post, indent=4 ))
 
-print(upstairs_id, json.dumps(upstairs_climates,indent=4))
+elif ecoBeeResponse.status_code == 500:
+    print("Refresh Access Token")
+else:
+    print("Something went wrong", ecoBeeResponse)
+    
+#def get_thermostat_programs(main_floor_id, upstairs_id):
+#    for thermostat in ecoBeeResponse["thermostatList"]:
+#        if thermostat["identifier"] == main_floor_id:
+#            main_floor_program = thermostat["program"]
+#        elif thermostat["identifier"] == upstairs_id:
+#            upstairs_program = thermostat["program"]
+#        else: print("Could not find thermostats with that identifier")
+#    return main_floor_program, upstairs_program
+
+# main_floor_program, upstairs_program = get_thermostat_programs(main_floor_id,upstairs_id)
