@@ -1,3 +1,4 @@
 #ignore personal json files
 secrets.json
-warmerComfortProgramUpstairs.json
+mainFloorBody.json
+upStairsBody.json
